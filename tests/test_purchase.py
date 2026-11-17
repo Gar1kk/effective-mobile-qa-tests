@@ -31,34 +31,48 @@ def test_purchase():
         # Ждём открытия страницы корзины
         wait.until(EC.url_contains("cart.html"))
 
-        # 5. Проверяем, что рюкзак в корзине
+        # 5. Проверяем, что товар находится в корзине
         product = wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, ".cart_item .inventory_item_name")
         ))
+
         assert product.text == "Sauce Labs Backpack"
 
-        # 6. Начинаем оформление заказа
+        # 6. Переходим к оформлению заказа
         wait.until(EC.element_to_be_clickable(
             (By.ID, "checkout")
         )).click()
 
-        # 7. Заполняем данные покупателя
+        # 7. Проверяем оформление с пустыми полями
         wait.until(EC.visibility_of_element_located(
             (By.ID, "first-name")
-        )).send_keys("Garik")
+        ))
 
+        driver.find_element(By.ID, "continue").click()
+
+        # Проверяем сообщение об ошибке
+        error = wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '[data-test="error"]')
+        ))
+
+        assert error.text == "Error: First Name is required"
+
+        print("Проверка пустых полей пройдена!")
+
+        # 8. Заполняем данные покупателя
+        driver.find_element(By.ID, "first-name").send_keys("Garik")
         driver.find_element(By.ID, "last-name").send_keys("Test")
         driver.find_element(By.ID, "postal-code").send_keys("123456")
 
-        # 8. Продолжаем оформление
+        # 9. Продолжаем оформление
         driver.find_element(By.ID, "continue").click()
 
-        # 9. Завершаем заказ
+        # 10. Завершаем заказ
         wait.until(EC.element_to_be_clickable(
             (By.ID, "finish")
         )).click()
 
-        # 10. Проверяем успешную покупку
+        # 11. Проверяем успешную покупку
         result = wait.until(EC.visibility_of_element_located(
             (By.CLASS_NAME, "complete-header")
         ))
