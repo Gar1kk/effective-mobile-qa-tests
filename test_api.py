@@ -86,21 +86,26 @@ def test_api():
                 repo_url, headers=headers, timeout=15
             )
 
-            if check.status_code == 200:
-                assert check.json()["id"] == created_id
+            # Проверяем ответ GitHub перед удалением
+            assert check.status_code == 200, (
+                f"Не удалось проверить репозиторий перед удалением: {check.status_code}"
+            )
 
-                response = requests.delete(
-                    repo_url, headers=headers, timeout=15
-                )
+            # Проверяем ID, чтобы не удалить чужой репозиторий
+            assert check.json()["id"] == created_id
 
-                assert response.status_code == 204, response.text
+            # Удаляем репозиторий
+            response = requests.delete(
+                repo_url, headers=headers, timeout=15
+            )
 
-                # Проверяем, что репозиторий больше не существует
-                response = requests.get(
-                    repo_url, headers=headers, timeout=15
-                )
+            assert response.status_code == 204, response.text
 
-                assert response.status_code == 404, "Репозиторий всё ещё существует"
+            # Проверяем, что репозиторий больше не существует
+            response = requests.get(
+                repo_url, headers=headers, timeout=15
+            )
 
-                print("Тестовый репозиторий успешно удалён и проверен!")
+            assert response.status_code == 404, "Репозиторий всё ещё существует"
 
+            print("Тестовый репозиторий успешно удалён и проверен!")
