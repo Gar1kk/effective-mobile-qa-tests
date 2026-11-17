@@ -1,3 +1,4 @@
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -29,9 +30,18 @@ def test_purchase():
         )).click()
 
         # Ждём открытия страницы корзины
-        wait.until(EC.url_contains("cart.html"))
+        try:
+            wait.until(EC.url_contains("cart.html"))
+        except TimeoutException:
+            print("URL при ошибке:", driver.current_url)
+            print("Заголовок страницы:", driver.title)
+            print(
+                "Текст страницы:",
+                driver.find_element(By.TAG_NAME, "body").text[:1500]
+            )
+            raise
 
-        # 5. Проверяем, что товар находится в корзине
+        # 5. Проверяем товар в корзине
         product = wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, ".cart_item .inventory_item_name")
         ))
@@ -50,8 +60,11 @@ def test_purchase():
             ))
         except TimeoutException:
             print("URL при ошибке:", driver.current_url)
-            print("Текст страницы:",
-                  driver.find_element(By.TAG_NAME, "body").text[:1500])
+            print("Заголовок страницы:", driver.title)
+            print(
+                "Текст страницы:",
+                driver.find_element(By.TAG_NAME, "body").text[:1500]
+            )
             raise
 
         driver.find_element(By.ID, "continue").click()
