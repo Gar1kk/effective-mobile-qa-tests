@@ -1,0 +1,23 @@
+
+# Временные файлы Python
+__pycache__/
+*.pyc
+
+# Файлы pytest
+.pytest_cache/
+
+# Виртуальное окружение
+.venv/
+venv/
+
+# Настройки PyCharm
+.idea/
+
+# Секретные данные
+.env
+.env.*
+!.env.example
+
+# Системные файлы
+.DS_Store
+Thumbs.db
