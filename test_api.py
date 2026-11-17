@@ -94,4 +94,13 @@ def test_api():
                 )
 
                 assert response.status_code == 204, response.text
-                print("Тестовый репозиторий удалён!")
+
+                # Проверяем, что репозиторий больше не существует
+                response = requests.get(
+                    repo_url, headers=headers, timeout=15
+                )
+
+                assert response.status_code == 404, "Репозиторий всё ещё существует"
+
+                print("Тестовый репозиторий успешно удалён и проверен!")
+
